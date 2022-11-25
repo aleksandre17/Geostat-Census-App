@@ -1,0 +1,32 @@
+R_DEF: Internal format may change without notice
+local
+attr clearText
+attr highlightColor
+attr highlightSelected
+attr hintText
+attr textColor
+color gray
+color list_even
+color list_odd
+color list_selected
+color red
+color stroke_border
+color white
+dimen font_size
+dimen margin_basic_25
+drawable default_border
+drawable gradient_spinner
+id alertCheckbox
+id alertSearchEditText
+id alertSearchListView
+id alertTextView
+id empty
+layout alert_dialog_listview_search
+layout item_listview_multiple
+layout item_listview_single
+layout textview_for_spinner
+string not_found
+string string_item_name
+string type_to_search
+styleable MultiSpinnerSearch hintText highlightSelected highlightColor textColor clearText
+styleable SingleSpinnerSearch hintText highlightSelected highlightColor textColor clearText

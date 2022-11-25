@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <data>
+        <import type="com.geostat.census_2024.utility.Inter" />
+        <import type="android.view.View" />
+        <import type="java.util.List"/>
+        <!--        <variable name="list" type="List&lt;String>"/>-->
+        <!--        <variable name="key" type="String"/>-->
+        <variable name="vm" type="com.geostat.census_2024.ui.fragment.stepper.model.FragmentStepViewModel" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp">
+
+            <androidx.constraintlayout.widget.Group
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="blockNumField,streetNameField" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/regionIdFeald"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:hint="რეგიონი"
+                app:expandedHintEnabled="false"
+                app:layout_constraintBottom_toTopOf="@+id/municipalFeald"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.geostat.census_2024.ui.custom.CustomSpinner
+                    android:id="@+id/regionId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:inputType="textNoSuggestions"
+
+                    app:clearText="გასუფთავება"
+                    app:entries="@{vm.regionsEntries}"
+                    app:hintText="აირჩიეთ"
+                    app:isMunicipal="@{false}"
+                    app:modelId="@{vm.vm.id}"
+                    app:nextIndex="@{3}"
+                    app:selectedItemPosition="@={vm.vm.regionId}"
+                    app:viewList="@{List.of(`setRegionsEntries`, `setMunicipalEntries`)}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/municipalFeald"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+
+                android:layout_marginBottom="3dp"
+                android:hint="@{vm.vm.regionId == 2 ? `თბილისის რაიონი` : `მუნიციპალიტეტი`}"
+                app:expandedHintEnabled="false"
+                app:layout_constraintBottom_toTopOf="@+id/cityAddressFeald"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/regionIdFeald">
+
+                <com.geostat.census_2024.ui.custom.CustomSpinner
+                    android:id="@+id/municipal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:focusable="false"
+                    android:inputType="textNoSuggestions"
+
+                    app:entries="@{vm.municipalEntries}"
+                    app:hintText="აირჩიეთ"
+                    app:isMunicipal="@{true}"
+                    app:modelId="@{vm.vm.id}"
+                    app:nextIndex="@{4}"
+                    app:selectedItemPosition="@={vm.vm.municipalId}"
+                    app:viewList="@{List.of(`setMunicipalEntries`, `setUnityEntries`, `setCityEntries`, `setVillageEntries`)}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/cityAddressFeald"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="3dp"
+                android:hint="@{(vm.vm.regionId == 2) ? `დაბა` : `ქალაქი / დაბა`}"
+                android:visibility="@{(vm.vm.unityId > 0 || vm.vm.villageId > 0 || vm.cityEntries == null ||  vm.cityEntries.isEmpty()) ? View.GONE : View.VISIBLE }"
+                app:expandedHintEnabled="false"
+                app:layout_constraintBottom_toTopOf="@+id/unityFeald"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/municipalFeald">
+
+                <com.geostat.census_2024.ui.custom.CustomSpinner
+                    android:id="@+id/cityAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:focusable="false"
+                    android:inputType="textNoSuggestions"
+
+                    app:entries="@{vm.cityEntries}"
+                    app:hintText="აირჩიეთ"
+                    app:isMunicipal="@{false}"
+                    app:modelId="@{vm.vm.id}"
+                    app:nextIndex="@{null}"
+                    app:selectedItemPosition="@={vm.vm.cityId}"
+                    app:viewList="@{List.of(`setCityEntries`)}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:visibility="@{(vm.vm.cityId > 0 || vm.vm.regionId == 2 || vm.unityEntries == null ||  vm.unityEntries.isEmpty()) ? View.GONE : View.VISIBLE }"
+                android:id="@+id/unityFeald"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="3dp"
+                android:hint="ადმინისტრაციული ერთეული (თემი)"
+                app:expandedHintEnabled="false"
+                app:layout_constraintBottom_toTopOf="@+id/villageFeald"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cityAddressFeald">
+
+                <com.geostat.census_2024.ui.custom.CustomSpinner
+                    android:id="@+id/unity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:focusable="false"
+                    android:inputType="textNoSuggestions"
+
+                    app:entries="@{vm.unityEntries}"
+                    app:hintText="აირჩიეთ"
+                    app:isMunicipal="@{false}"
+                    app:modelId="@{vm.vm.id}"
+                    app:nextIndex="@{5}"
+                    app:selectedItemPosition="@={vm.vm.unityId}"
+                    app:viewList="@{List.of(`setUnityEntries`, `setVillageEntries`)}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/villageFeald"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="სოფელი"
+                android:visibility="@{vm.vm.cityId > 0 || vm.villageEntries == null ||  vm.villageEntries.isEmpty() ? View.GONE : View.VISIBLE }"
+                app:expandedHintEnabled="false"
+                app:layout_constraintBottom_toTopOf="@+id/space2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/unityFeald">
+
+                <com.geostat.census_2024.ui.custom.CustomSpinner
+                    android:id="@+id/village"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:inputType="textNoSuggestions"
+
+                    app:entries="@{vm.villageEntries}"
+                    app:hintText="აირჩიეთ"
+                    app:isMunicipal="@{false}"
+                    app:modelId="@{vm.vm.id}"
+                    app:nextIndex="@{null}"
+                    app:selectedItemPosition="@={vm.vm.villageId}"
+                    app:viewList="@{List.of(`setVillageEntries`)}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:id="@+id/space2"
+                android:layout_width="0dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:background="#ccc"
+                android:backgroundTint="#ccc"
+                app:layout_constraintBottom_toTopOf="@+id/districtFiled"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/villageFeald" />
+
+            <androidx.constraintlayout.widget.Group
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="raionNumField,quarterNameField" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/districtFiled"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:hint="უბნის დასახელება (მასივი, პლატო, უბანი)"
+                android:visibility="@{(vm.vm.regionId != 2 || vm.vm.cityId != null || vm.vm.villageId != null) ? View.GONE : View.VISIBLE }"
+                app:expandedHintEnabled="false"
+                app:layout_constraintBottom_toTopOf="@+id/raionNumField"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/space2">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/district"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:singleLine="true"
+                    android:text="@={vm.vm.district}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/raionNumField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:layout_marginEnd="3dp"
+                app:layout_constraintBottom_toTopOf="@+id/streetAddressField"
+                app:layout_constraintEnd_toStartOf="@+id/quarterNameField"
+                app:layout_constraintStart_toStartOf="parent"
+                app:expandedHintEnabled="false"
+                android:hint="მ/რ"
+                app:layout_constraintTop_toBottomOf="@+id/districtFiled">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/raionNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:singleLine="true"
+                    android:text="@={vm.vm.mr}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/quarterNameField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/raionNumField"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/raionNumField"
+                app:layout_constraintTop_toTopOf="@+id/raionNumField"
+                app:expandedHintEnabled="false"
+                android:hint="კვარტალი">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/quarterName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:singleLine="true"
+                    android:text="@={vm.vm.quarter}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/streetAddressField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                app:layout_constraintBottom_toTopOf="@+id/streetNameField"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:expandedHintEnabled="false"
+                app:layout_constraintTop_toBottomOf="@+id/raionNumField"
+                android:hint="ქუჩის დასახელება">
+
+                <com.geostat.census_2024.ui.custom.StreetSpinner
+                    android:id="@+id/streetAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:singleLine="true"
+                    android:text="@={vm.vm.street}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/blockNumField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="@+id/streetNameField"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/streetNameField"
+                app:layout_constraintTop_toTopOf="@+id/streetNameField"
+                app:expandedHintEnabled="false"
+                android:hint="კორპუსის N:">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/blockNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:singleLine="true"
+                    android:text="@={vm.vm.corpus}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/streetNameField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
+                app:layout_constraintBottom_toTopOf="@+id/space"
+                app:layout_constraintEnd_toStartOf="@+id/blockNumField"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/streetAddressField"
+                app:expandedHintEnabled="false"
+                android:hint="შენობის N: ქუჩის ფარგლებში">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/streetName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:singleLine="true"
+                    android:text="@={vm.vm.building}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:id="@+id/space"
+                android:layout_width="0dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="#ccc"
+                android:backgroundTint="#ccc"
+                app:layout_constraintBottom_toTopOf="@+id/BuildingTypeFiled"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/streetNameField" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/BuildingTypeFiled"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/apartmentNumNumField"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/space"
+                app:expandedHintEnabled="false"
+                android:hint="შენობის ტიპი">
+
+                <com.geostat.census_2024.ui.custom.InterSpinner
+                    android:id="@+id/BuildingType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:inputType="none|textNoSuggestions"
+                    app:value="@={vm.vm.buildingType}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/apartmentNumNumField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:visibility="@{vm.vm.buildingType.equals(1) || vm.vm.buildingType.equals(2) ? View.VISIBLE : View.GONE }"
+                app:layout_constraintBottom_toTopOf="@id/nonresidentialNameField"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/BuildingTypeFiled"
+                app:expandedHintEnabled="false"
+                android:hint="ბინის N:">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/apartmentNum"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="@={Inter.toString(vm.vm.flatNum)}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/nonresidentialNameField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:visibility="@{vm.vm.buildingType == null || vm.vm.buildingType.equals(1) ||  vm.vm.buildingType.equals(2) ||  vm.vm.buildingType.equals(4) ||  vm.vm.buildingType.equals(5) ||  vm.vm.buildingType.equals(3) ? View.GONE : View.VISIBLE }"
+                app:layout_constraintBottom_toTopOf="@id/houseStatusField"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/apartmentNumNumField"
+                app:expandedHintEnabled="false"
+                android:hint="დასახელება">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/nonresidentialName"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={vm.vm.institutionName}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/houseStatusField"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:visibility="@{vm.vm.buildingType.equals(1) || vm.vm.buildingType.equals(2) ? View.VISIBLE : View.GONE }"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/nonresidentialNameField"
+                app:expandedHintEnabled="false"
+                android:hint="საცხოვრისის სტატუსი">
+
+                <com.geostat.census_2024.ui.custom.InterSpinner
+                    android:id="@+id/houseStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:cursorVisible="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:inputType="textVisiblePassword|textNoSuggestions"
+                    app:value="@={vm.vm.livingStatus}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+</layout>

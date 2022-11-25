@@ -1,0 +1,18 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="Map">
+
+        <SwitchPreferenceCompat
+            app:key="sync"
+            app:icon="@drawable/ic_baseline_edit_location_24"
+            app:title="მდებარეობა" />
+
+
+        <SwitchPreferenceCompat
+            app:key="initLocation"
+            app:icon="@drawable/ic_baseline_add_location_alt_24"
+            app:title="საწყისი ობიექტი" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_settings"
+        android:title="სინქრონიზაცია"
+        app:showAsAction="ifRoom|never" />
+
+    <item
+        android:id="@+id/settings"
+        app:showAsAction="withText"
+        android:title="პარამეტრები"
+        android:icon="@drawable/ic_baseline_app_settings_alt_24" />
+
+
+<!--    <item-->
+<!--        android:id="@+id/end"-->
+<!--        app:showAsAction="withText"-->
+<!--        android:title="დასრულებული"-->
+<!--        android:icon="@drawable/ic_baseline_crop_square_24_3" />-->
+
+<!--    <item-->
+<!--        android:id="@+id/hasPermission"-->
+<!--        app:showAsAction="withText"-->
+<!--        android:title="დადასტურებული"-->
+<!--        android:icon="@drawable/ic_baseline_crop_square_24_2" />-->
+
+    <item
+        android:id="@+id/needEnd"
+        app:showAsAction="withText"
+        android:title="უარყოფილები"
+        android:icon="@drawable/ic_baseline_crop_square_24_1" />
+
+    <item
+        android:id="@+id/exit"
+        app:showAsAction="withText"
+        android:icon="@drawable/ic_baseline_close_24"
+        android:title="გასვლა"/>
+
+</menu>

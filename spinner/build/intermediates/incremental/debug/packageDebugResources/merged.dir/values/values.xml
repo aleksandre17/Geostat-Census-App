@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr format="string" name="clearText"/>
+    <attr format="color" name="highlightColor"/>
+    <attr format="boolean" name="highlightSelected"/>
+    <attr format="string" name="hintText"/>
+    <attr format="color" name="textColor"/>
+    <color name="gray">#D1D0CE</color>
+    <color name="list_even">#FFF5F5</color>
+    <color name="list_odd">#F3FFFF</color>
+    <color name="list_selected">#455FB6</color>
+    <color name="red">#FFFFFF</color>
+    <color name="stroke_border">#D7D7D7</color>
+    <color name="white">#FFFFFF</color>
+    <dimen name="font_size">15sp</dimen>
+    <dimen name="margin_basic_25">0.25dp</dimen>
+    <string name="not_found">Not Found!</string>
+    <string name="string_item_name">Item Name</string>
+    <string name="type_to_search">Type to Search</string>
+    <declare-styleable name="MultiSpinnerSearch">
+		<attr name="hintText"/>
+		<attr name="highlightSelected"/>
+		<attr name="highlightColor"/>
+		<attr name="textColor"/>
+		<attr name="clearText"/>
+	</declare-styleable>
+    <declare-styleable name="SingleSpinnerSearch">
+		<attr name="hintText"/>
+		<attr name="highlightSelected"/>
+		<attr name="highlightColor"/>
+		<attr name="textColor"/>
+		<attr name="clearText"/>
+	</declare-styleable>
+</resources>

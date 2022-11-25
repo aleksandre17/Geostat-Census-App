@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr format="string" name="clearText"/>
+    <attr format="color" name="highlightColor"/>
+    <attr format="boolean" name="highlightSelected"/>
+    <attr format="string" name="hintText"/>
+    <attr format="color" name="textColor"/>
+    <declare-styleable name="MultiSpinnerSearch">
+        <attr name="hintText"/>
+        <attr name="highlightSelected"/>
+        <attr name="highlightColor"/>
+        <attr name="textColor"/>
+        <attr name="clearText"/>
+    </declare-styleable>
+    <declare-styleable name="SingleSpinnerSearch">
+        <attr name="hintText"/>
+        <attr name="highlightSelected"/>
+        <attr name="highlightColor"/>
+        <attr name="textColor"/>
+        <attr name="clearText"/>
+    </declare-styleable>
+</resources>
