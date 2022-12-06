@@ -6,39 +6,49 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 
-import com.geostat.census_2024.data.local.entities.Addressing;
-import com.geostat.census_2024.data.local.entities.Holder;
+import com.geostat.census_2024.data.local.entities.InquireActivityV1DateStatusEntity;
+import com.geostat.census_2024.data.local.entities.InquireV1Entity;
+import com.geostat.census_2024.data.local.entities.InquireV1HolderEntity;
 import com.geostat.census_2024.data.local.entities.SupervisionEntity;
 import com.geostat.census_2024.data.local.realtions.AddressingWithHolders;
 
 import java.util.List;
 
 @Dao
-public abstract class AddressingDao extends BaseDai<Addressing> {
+public abstract class AddressingDao extends BaseDai<InquireV1Entity> {
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract Long insertAddressing(Addressing addressing);
+    public abstract Long insertAddressing(InquireV1Entity inquireV1Entity);
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    public abstract void insertHolders(List<Holder> holders);
+    public abstract void insertHolders(List<InquireV1HolderEntity> inquireV1HolderEntities);
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract Long insertSupervision(SupervisionEntity supervisionEntity);
 
+
     @Transaction
-    @Query("UPDATE addressings SET status = 2 where uuid in (:houseCodes)")
-    public abstract Integer updateAddressingStatus(List<String> houseCodes);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public abstract Long insertAddressingDateStatuses(InquireActivityV1DateStatusEntity inquireActivityV1DateStatusEntity);
+
+    @Transaction
+    @Query("UPDATE addressings SET status = :setStatus where uuid in (:houseCodes)")
+    public abstract Integer updateAddressingStatus(List<String> houseCodes, int setStatus);
 
     @Transaction
     @Query("UPDATE addressings SET rollbackComment = :rollbackComment where uuid = :uuid")
     public abstract void updateAddressingRollbackComment(String rollbackComment, String uuid);
 
     @Transaction
-    @Query("DELETE FROM addressings where house_code = :houseCode")
-    public abstract void removeAddressing(String houseCode);
+    @Query("DELETE FROM addressings where uuid in (:uuids)")
+    public abstract void removeAddressing(List<String> uuids);
+
+    @Transaction
+    @Query("SELECT * FROM addressings where house_code in (:houseCodes)")
+    public abstract List<AddressingWithHolders> fetchByHouseCodes(List<String> houseCodes);
 
     @Transaction
     @Query("SELECT * FROM addressings where house_code = :id order by created_at desc")
@@ -48,6 +58,7 @@ public abstract class AddressingDao extends BaseDai<Addressing> {
     @Query("SELECT * FROM addressings order by created_at")
     public abstract List<AddressingWithHolders> fetchAll();
 
+    @Transaction
     @Query("SELECT * FROM addressings where id = :id")
     public abstract AddressingWithHolders getAddressingById(Integer id);
 
@@ -63,6 +74,6 @@ public abstract class AddressingDao extends BaseDai<Addressing> {
     public abstract Integer deleteAddressById(int id);
 
     @Query("SELECT * from addressings where house_code = :id order by created_at desc LIMIT 1")
-    public abstract Addressing findNewestR(String id);
+    public abstract InquireV1Entity findNewestR(String id);
 
 }

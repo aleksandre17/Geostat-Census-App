@@ -10,24 +10,31 @@ import androidx.lifecycle.MutableLiveData;
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.geometry.Geometry;
 import com.esri.arcgisruntime.layers.FeatureLayer;
-import com.geostat.census_2024.data.local.entities.Addressing;
+import com.geostat.census_2024.data.local.entities.InquireV1Entity;
 import com.geostat.census_2024.data.repository.AddressingRepository;
 import com.google.gson.Gson;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 public class MapViewModel extends AndroidViewModel {
-
-    private MutableLiveData<Boolean> isLoadPkg;
-    private MutableLiveData<Boolean> isLoadRaster;
 
     private Geometry mapClickedArea = null;
     private final MutableLiveData<FeatureLayer> touchableLayer = new MutableLiveData<>();
     private Feature selectedFeatureFromMapClickedArea = null;
     private Feature userArea = null;
 
+    private final MutableLiveData<Boolean> isLoadPkg = new MutableLiveData<>(false);
+    private final MutableLiveData<Boolean> isLoadRaster = new MutableLiveData<>(false);
+
     AddressingRepository addressingRepository;
+
 
     ///
     private UserAreaModel userAreaModel = null;
@@ -67,22 +74,18 @@ public class MapViewModel extends AndroidViewModel {
     }
 
     public LiveData<Boolean> getIsLoadRaster() {
-        if (isLoadRaster == null) isLoadRaster = new MutableLiveData<>();
         return isLoadRaster;
     }
 
     public void setIsLoadRaster(Boolean raster) {
-        if (isLoadRaster == null) isLoadRaster = new MutableLiveData<>();
         this.isLoadRaster.postValue(raster);
     }
 
     public LiveData<Boolean> getIsLoadPkg() {
-        if (isLoadPkg == null) isLoadPkg = new MutableLiveData<>();
         return isLoadPkg;
     }
 
     public void setIsLoadPkg(Boolean pkg) {
-        if (isLoadPkg == null) isLoadPkg = new MutableLiveData<>();
         this.isLoadPkg.postValue(pkg);
     }
 
@@ -108,11 +111,21 @@ public class MapViewModel extends AndroidViewModel {
         setUserAreaModel(userAreaModel);
     }
 
-    public Integer updateAddressingStatus (List<Addressing> addressings) {
-        return addressingRepository.updateAddressingStatus(addressings);
+    public Integer updateAddressingStatus (List<InquireV1Entity> inquireV1Entities, int setStatus) {
+        List<String> houseUuids = inquireV1Entities.parallelStream().filter(addressing -> addressing.getStatus().equals(2)).map(InquireV1Entity::getUuid).collect(Collectors.toList());
+        return addressingRepository.updateAddressingStatus(houseUuids, setStatus, inquireV1Entities);
     }
 
-    public void removeAddressing(String houseCode) {
-        addressingRepository.removeAddressing(houseCode);
+    public void updateAddressingStatus (Feature feature, int setStatus) throws ExecutionException, InterruptedException {
+        List<String> houseUuids = addressingRepository.fetch(Objects.requireNonNull(feature.getAttributes().get("house_code")).toString())
+                .parallelStream().map(addressing -> addressing.inquireV1Entity.getUuid()).collect(Collectors.toList());
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        Future<Integer> serviceFuture = service.submit(() -> addressingRepository.updateAddressingStatus(houseUuids, setStatus, null));
+        serviceFuture.get();
+    }
+
+    public void removeAddressing(List<String> houseCodes) {
+        List<String> houseUuids = addressingRepository.fetchByHouseCodes(houseCodes).stream().map(addressing -> addressing.inquireV1Entity.getUuid()).collect(Collectors.toList());
+        addressingRepository.removeAddressing(houseUuids);
     }
 }

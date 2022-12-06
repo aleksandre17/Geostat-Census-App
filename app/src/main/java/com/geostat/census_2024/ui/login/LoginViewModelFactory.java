@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.geostat.census_2024.data.LoginDataSource;
-import com.geostat.census_2024.data.LoginRepository;
+import com.geostat.census_2024.data.repository.LoginRepository;
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.

@@ -16,7 +16,7 @@ import com.esri.arcgisruntime.geometry.Point;
 import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.mapping.view.LocationDisplay;
 import com.geostat.census_2024.R;
-import com.geostat.census_2024.inter.ThatActivity;
+import com.geostat.census_2024.architecture.inter.ThatActivity;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 

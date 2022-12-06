@@ -6,10 +6,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.geostat.census_2024.data.local.entities.Address;
-import com.geostat.census_2024.data.local.entities.BuildingType;
-import com.geostat.census_2024.data.local.entities.LivingStatus;
-import com.geostat.census_2024.data.local.entities.Tag;
+import com.geostat.census_2024.data.local.entities.AddressEntity;
+import com.geostat.census_2024.data.local.entities.BuildingTypeEntity;
+import com.geostat.census_2024.data.local.entities.LivingStatusEntity;
+import com.geostat.census_2024.data.local.entities.TagEntity;
 import com.geostat.census_2024.data.repository.AddressRepository;
 
 import java.util.List;
@@ -19,11 +19,11 @@ public class AddressViewModel extends AndroidViewModel{
 
     AddressRepository addressRepository;
 
-    private final LiveData<List<Address>> addresses;
+    private final LiveData<List<AddressEntity>> addresses;
 
-    private List<BuildingType> buildingTypes;
-    private List<LivingStatus> livingStatuses;
-    private List<Tag> tags;
+    private List<BuildingTypeEntity> buildingTypeEntities;
+    private List<LivingStatusEntity> livingStatusEntities;
+    private List<TagEntity> tagEntities;
 
 
     public AddressViewModel(@NonNull Application application) {
@@ -34,62 +34,62 @@ public class AddressViewModel extends AndroidViewModel{
         addresses = addressRepository.getAllAddress();
     }
 
-    public Address findMunicipalityByLocationCode (String locationCode) {
-        Address address = null;
+    public AddressEntity findMunicipalityByLocationCode (String locationCode) {
+        AddressEntity addressEntity = null;
         try {
-            address = addressRepository.findMunicipalityByLocationCode(locationCode);
+            addressEntity = addressRepository.findMunicipalityByLocationCode(locationCode);
         } catch (Exception e) {
             e.getMessage();
         }
-        return address;
+        return addressEntity;
     }
 
-    public LiveData<List<Address>> getAddresses() {
+    public LiveData<List<AddressEntity>> getAddresses() {
         return addresses;
     }
 
-    public LiveData<List<Address>> getRegions(int parentId, int length) {
+    public LiveData<List<AddressEntity>> getRegions(int parentId, int length) {
         return addressRepository.getRegions(parentId, length);
     }
 
-    public Address getAddressById(int id) throws ExecutionException, InterruptedException {
+    public AddressEntity getAddressById(int id) throws ExecutionException, InterruptedException {
         return addressRepository.getAddressById(id);
     }
 
 
-    public LiveData<List<Address>> getRegionsAlter(int parentId, int urbanTypeId) {
+    public LiveData<List<AddressEntity>> getRegionsAlter(int parentId, int urbanTypeId) {
         return addressRepository.getRegionsAlter(parentId, urbanTypeId);
     }
 
-    public List<BuildingType> getAllBuildingType () throws ExecutionException, InterruptedException {
+    public List<BuildingTypeEntity> getAllBuildingType () throws ExecutionException, InterruptedException {
         return addressRepository.getAllBuildingType();
     }
 
-    public List<LivingStatus> getAllLivingStatus() throws ExecutionException, InterruptedException {
+    public List<LivingStatusEntity> getAllLivingStatus() throws ExecutionException, InterruptedException {
         return addressRepository.getAllLivingStatus();
     }
 
-    public void setBuildingTypes(List<BuildingType> buildingTypes) {
-        this.buildingTypes = buildingTypes;
+    public void setBuildingTypes(List<BuildingTypeEntity> buildingTypeEntities) {
+        this.buildingTypeEntities = buildingTypeEntities;
     }
 
-    public void setLivingStatuses(List<LivingStatus> livingStatuses) {
-        this.livingStatuses = livingStatuses;
+    public void setLivingStatuses(List<LivingStatusEntity> livingStatusEntities) {
+        this.livingStatusEntities = livingStatusEntities;
     }
 
-    public void setTags (List<Tag> tags) {
-        this.tags = tags;
+    public void setTags (List<TagEntity> tagEntities) {
+        this.tagEntities = tagEntities;
     }
 
-    public void setTag (Tag tag, int type) {
-        this.addressRepository.setTag(tag, type);
+    public void setTag (TagEntity tagEntity, int type) {
+        this.addressRepository.setTag(tagEntity, type);
     }
 
-    public List<Tag> getTags() throws ExecutionException, InterruptedException {
+    public List<TagEntity> getTags() throws ExecutionException, InterruptedException {
         return addressRepository.getTags();
     }
 
-    public int removeTag(Tag tag) throws ExecutionException, InterruptedException {
-        return addressRepository.removeTag(tag);
+    public int removeTag(TagEntity tagEntity) throws ExecutionException, InterruptedException {
+        return addressRepository.removeTag(tagEntity);
     }
 }

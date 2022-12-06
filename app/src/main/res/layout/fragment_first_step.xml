@@ -10,7 +10,7 @@
         <import type="java.util.List"/>
         <!--        <variable name="list" type="List&lt;String>"/>-->
         <!--        <variable name="key" type="String"/>-->
-        <variable name="vm" type="com.geostat.census_2024.ui.fragment.stepper.model.FragmentStepViewModel" />
+        <variable name="vm" type="com.geostat.census_2024.ui.inquire_v1.stepper.model.FragmentStepViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -50,8 +50,9 @@
                     android:id="@+id/regionId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:inputType="textNoSuggestions"
+                    android:focusable="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:cursorVisible="false"
 
                     app:clearText="გასუფთავება"
                     app:entries="@{vm.regionsEntries}"
@@ -84,8 +85,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
-                    android:focusable="false"
-                    android:inputType="textNoSuggestions"
+                    android:focusable="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:cursorVisible="false"
 
                     app:entries="@{vm.municipalEntries}"
                     app:hintText="აირჩიეთ"
@@ -118,8 +120,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
-                    android:focusable="false"
-                    android:inputType="textNoSuggestions"
+                    android:focusable="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:cursorVisible="false"
 
                     app:entries="@{vm.cityEntries}"
                     app:hintText="აირჩიეთ"
@@ -151,8 +154,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
 
-                    android:focusable="false"
-                    android:inputType="textNoSuggestions"
+                    android:focusable="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:cursorVisible="false"
 
                     app:entries="@{vm.unityEntries}"
                     app:hintText="აირჩიეთ"
@@ -182,8 +186,9 @@
                     android:id="@+id/village"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    android:inputType="textNoSuggestions"
+                    android:focusable="true"
+                    android:inputType="none|textNoSuggestions"
+                    android:cursorVisible="false"
 
                     app:entries="@{vm.villageEntries}"
                     app:hintText="აირჩიეთ"
@@ -258,6 +263,10 @@
                     android:layout_height="wrap_content"
                     android:inputType="textVisiblePassword|textNoSuggestions"
                     android:singleLine="true"
+                    android:nextFocusUp="@id/quarterName"
+                    android:nextFocusLeft="@id/quarterName"
+                    android:nextFocusDown="@id/quarterName"
+                    android:nextFocusRight="@id/quarterName"
                     android:text="@={vm.vm.mr}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -282,6 +291,10 @@
                     android:ems="10"
                     android:inputType="textVisiblePassword|textNoSuggestions"
                     android:singleLine="true"
+                    android:nextFocusRight="@id/streetAddress"
+                    android:nextFocusUp="@id/streetAddress"
+                    android:nextFocusDown="@id/streetAddress"
+                    android:nextFocusLeft="@id/streetAddress"
                     android:text="@={vm.vm.quarter}" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -386,8 +399,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:cursorVisible="false"
-                    android:focusable="false"
-                    android:focusableInTouchMode="false"
+                    android:completionThreshold="100"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
                     android:inputType="none|textNoSuggestions"
                     app:value="@={vm.vm.buildingType}" />
 

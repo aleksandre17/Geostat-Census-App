@@ -9,13 +9,13 @@
         <import type="java.util.List"/>
         <!--        <variable name="list" type="List&lt;String>"/>-->
         <!--        <variable name="key" type="String"/>-->
-        <variable name="vm" type="com.geostat.census_2024.ui.fragment.stepper.model.FragmentStepViewModel" />
+        <variable name="vm" type="com.geostat.census_2024.ui.inquire_v1.stepper.model.FragmentStepViewModel" />
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.fragment.stepper.FirstStepFragment">
+        tools:context=".ui.inquire_v1.stepper.FirstStepFragment">
 
         <ScrollView
             android:layout_width="match_parent"

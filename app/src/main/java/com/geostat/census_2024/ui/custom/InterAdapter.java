@@ -15,13 +15,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.geostat.census_2024.R;
-import com.geostat.census_2024.data.local.entities.Tag;
+import com.geostat.census_2024.data.local.entities.TagEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class InterAdapter<T extends Tag> extends ArrayAdapter<T> {
+public class InterAdapter<T extends TagEntity> extends ArrayAdapter<T> {
 
     private final List<T> items;
     private final List<T> tmp;

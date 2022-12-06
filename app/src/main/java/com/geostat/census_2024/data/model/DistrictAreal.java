@@ -12,7 +12,7 @@ public class DistrictAreal {
     private String region_id;
     private String geometry;
 
-    private List<House> houses;
+    private List<HouseModel> houseModels;
 
     public String getDistr_code() {
         return distr_code;
@@ -62,14 +62,14 @@ public class DistrictAreal {
         this.geometry = geometry;
     }
 
-    public List<House> getHouses() {
-        return houses;
+    public List<HouseModel> getHouses() {
+        return houseModels;
     }
 
-    public void setHouses(List<House> houses) {
-        if (this.houses == null) this.houses = new ArrayList<>();
-        if (!houses.isEmpty()) {
-            this.houses.addAll(houses);
+    public void setHouses(List<HouseModel> houseModels) {
+        if (this.houseModels == null) this.houseModels = new ArrayList<>();
+        if (!houseModels.isEmpty()) {
+            this.houseModels.addAll(houseModels);
         }
     }
 }

@@ -8,9 +8,10 @@ import androidx.lifecycle.ViewModel;
 
 import com.geostat.census_2024.R;
 import com.geostat.census_2024.architecture.module.EncryptModule;
-import com.geostat.census_2024.data.LoginRepository;
-import com.geostat.census_2024.data.Result;
-import com.geostat.census_2024.data.local.entities.User;
+import com.geostat.census_2024.data.model.UserModel;
+import com.geostat.census_2024.data.repository.LoginRepository;
+import com.geostat.census_2024.data.response.Result;
+import com.geostat.census_2024.data.local.entities.UserEntity;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
@@ -38,23 +39,23 @@ public class LoginViewModel extends ViewModel {
     public void login(String username, String password) throws ExecutionException, InterruptedException {
 
         // can be launched in a separate asynchronous job
-        Result<com.geostat.census_2024.data.model.User> result = loginRepository.login(username, password);
+        Result<UserModel> result = loginRepository.login(username, password);
 
         if (result instanceof Result.Success) {
-            com.geostat.census_2024.data.model.User user = ((Result.Success<com.geostat.census_2024.data.model.User>) result).getData();
+            UserModel userModel = ((Result.Success<UserModel>) result).getData();
 
             if (((Result.Success<?>) result).getFrom().equals("server")) {
 
                 EncryptModule encryptModule = new EncryptModule();
-                User insert = new User();
-                insert.setUserName(user.getUserName());
-                insert.setToken(user.getToken());
+                UserEntity insert = new UserEntity();
+                insert.setUserName(userModel.getUserName());
+                insert.setToken(userModel.getToken());
                 insert.setPassword(Arrays.toString(encryptModule.encryptPassword(password)));
 
                 loginRepository.insert(insert);
             }
 
-            LoggedInUserView loggedInUserView = new LoggedInUserView(user.getUserName());
+            LoggedInUserView loggedInUserView = new LoggedInUserView(userModel.getUserName());
 
             loginResult.setValue(new LoginResult(loggedInUserView));
         } else {

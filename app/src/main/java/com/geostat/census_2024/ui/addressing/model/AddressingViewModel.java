@@ -5,7 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
-import com.geostat.census_2024.data.local.entities.Addressing;
+import com.geostat.census_2024.data.local.entities.InquireV1Entity;
 import com.geostat.census_2024.data.local.realtions.AddressingWithHolders;
 import com.geostat.census_2024.data.model.LayerModel;
 import com.geostat.census_2024.data.repository.AddressingRepository;
@@ -32,7 +32,7 @@ public class AddressingViewModel extends AndroidViewModel {
         this.layerModel = layerModel;
     }
 
-    public List<AddressingWithHolders> fetchAddressing(String id) throws ExecutionException, InterruptedException {
+    public List<AddressingWithHolders> fetchAddressing(String id) {
         return addressingRepository.fetch(id);
     }
 
@@ -48,7 +48,7 @@ public class AddressingViewModel extends AndroidViewModel {
         return addressingRepository.getRollbackAddressings();
     }
 
-    public Addressing findNewestR (String id) {
+    public InquireV1Entity findNewestR (String id) {
         return addressingRepository.findNewestR(id);
     }
 }

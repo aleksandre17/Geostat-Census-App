@@ -12,7 +12,6 @@ import com.esri.arcgisruntime.geometry.SpatialReference;
 import com.esri.arcgisruntime.layers.FeatureLayer;
 import com.esri.arcgisruntime.mapping.view.IdentifyLayerResult;
 import com.esri.arcgisruntime.mapping.view.MapView;
-import com.geostat.census_2024.controller.IMapController;
 import com.geostat.census_2024.data.model.LayerModel;
 import com.geostat.census_2024.ui.map.model.MapViewModel;
 
@@ -22,7 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 
-public class MapRepository implements IMapController {
+public class MapRepository implements com.geostat.census_2024.data.repository.MapRepository {
 
     @NonNull
     private final MapView mapView;
@@ -153,7 +152,7 @@ public class MapRepository implements IMapController {
     }
 
     @Override
-    public ListenableFuture<Void> destroy(Feature feature, FeatureLayer mainFeatureLayer) {
+    public ListenableFuture<Void> waitDestroyPermission(Feature feature, FeatureLayer mainFeatureLayer) {
         return mainFeatureLayer.getFeatureTable().deleteFeatureAsync(feature);
     }
 }

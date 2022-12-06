@@ -21,11 +21,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.esri.arcgisruntime.ArcGISRuntimeEnvironment;
 import com.geostat.census_2024.data.LoginDataSource;
-import com.geostat.census_2024.data.LoginRepository;
-import com.geostat.census_2024.inter.ThatActivity;
-import com.geostat.census_2024.service.SyncService;
+import com.geostat.census_2024.data.repository.LoginRepository;
+import com.geostat.census_2024.architecture.inter.ThatActivity;
+import com.geostat.census_2024.architecture.service.SyncService;
 import com.geostat.census_2024.ui.login.LoginActivity;
 import com.geostat.census_2024.ui.map.event.ListenDrawer;
+import com.geostat.census_2024.ui.rollback.RollbackActivity;
 import com.geostat.census_2024.ui.settings.SettingsFragment;
 import com.geostat.census_2024.utility.SharedPref;
 

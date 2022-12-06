@@ -16,7 +16,7 @@ import java.util.Date;
 @Entity(
         tableName = "addressing_supervision",
         foreignKeys = {
-            @ForeignKey(entity = Addressing.class, parentColumns = { "id" }, childColumns = { "addressing_id" }, onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE)
+            @ForeignKey(entity = InquireV1Entity.class, parentColumns = { "id" }, childColumns = { "addressing_id" }, onUpdate = ForeignKey.CASCADE, onDelete = ForeignKey.CASCADE)
         },
         indices = { @Index("addressing_id"), @Index(value = "addressing_uuid", unique = true), @Index(value = "id", unique = true) }
 )

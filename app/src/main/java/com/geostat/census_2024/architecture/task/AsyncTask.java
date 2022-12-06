@@ -16,17 +16,9 @@ public abstract class AsyncTask<T extends AppCompatActivity> {
 
     private void startService(T activity) throws IOException {
         first();
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                taskRun();
-                activity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        taskEnd();
-                    }
-                });
-            }
+        executorService.execute(() -> {
+            taskRun();
+            activity.runOnUiThread(this::taskEnd);
         });
     }
 

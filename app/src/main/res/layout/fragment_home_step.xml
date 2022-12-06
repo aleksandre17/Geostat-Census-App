@@ -7,7 +7,7 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.fragment.stepper.HomeStepFragment">
+        tools:context=".ui.inquire_v1.stepper.HomeStepFragment">
 
         <!-- TODO: Update blank fragment layout -->
         <androidx.constraintlayout.widget.ConstraintLayout

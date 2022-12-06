@@ -12,7 +12,7 @@ import androidx.databinding.InverseBindingListener;
 import com.androidbuts.multispinnerfilter.KeyPairBoolData;
 import com.androidbuts.multispinnerfilter.SingleSpinnerListener;
 import com.androidbuts.multispinnerfilter.SingleSpinnerSearch;
-import com.geostat.census_2024.inter.IfSpinnerClickHandler;
+import com.geostat.census_2024.architecture.inter.IfSpinnerClickHandler;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
@@ -36,6 +36,11 @@ public class CustomSpinner extends SingleSpinnerSearch {
     public CustomSpinner setClickListener(IfSpinnerClickHandler listener) {
         this.clickListener = listener;
         return this;
+    }
+
+    @Override
+    public boolean onCheckIsTextEditor() {
+        return false;
     }
 
     @BindingAdapter(value = {"entries"}, requireAll = false)

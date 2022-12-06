@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.geostat.census_2024.R;
-import com.geostat.census_2024.inter.ThatActivity;
+import com.geostat.census_2024.architecture.inter.ThatActivity;
 
 public class LoaderModule {
 

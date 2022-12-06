@@ -9,7 +9,7 @@
     android:layout_gravity="center_vertical"
     android:fillViewport="true"
     android:orientation="vertical"
-    tools:context="com.geostat.census_2024.ui.map.fragment.FeatureEditableFragment">
+    tools:context="com.geostat.census_2024.ui.fragment.map.FeatureEditableFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

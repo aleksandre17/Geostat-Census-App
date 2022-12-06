@@ -3,6 +3,7 @@ package com.geostat.census_2024.ui.addressing;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.widget.Button;
 
@@ -18,14 +19,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.geostat.census_2024.R;
-import com.geostat.census_2024.data.local.entities.Addressing;
+import com.geostat.census_2024.data.local.entities.InquireV1Entity;
 import com.geostat.census_2024.data.local.realtions.AddressingWithHolders;
 import com.geostat.census_2024.data.model.LayerModel;
-import com.geostat.census_2024.handlers.IndexAdapterItemClickHandlers;
+import com.geostat.census_2024.architecture.inter.handler.IndexAdapterItemClickHandlers;
 import com.geostat.census_2024.ui.addressing.adapter.AddressingAdapter;
 import com.geostat.census_2024.ui.addressing.model.AddressingViewModel;
-import com.geostat.census_2024.ui.feature.AlertFeature;
-import com.geostat.census_2024.ui.fragment.stepper.MainActivity;
+import com.geostat.census_2024.architecture.widjet.AlertFeature;
+import com.geostat.census_2024.ui.inquire_v1.stepper.InquireActivityV1;
 import com.geostat.census_2024.ui.map.MapActivity;
 import com.geostat.census_2024.utility.SharedPref;
 import com.tapadoo.alerter.Alerter;
@@ -107,7 +108,7 @@ public class AddressingActivity extends AppCompatActivity {
             public void btnClickListener(int id, int index) {
                 itemIndex = index;
 
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                Intent intent = new Intent(getApplicationContext(), InquireActivityV1.class);
                 intent.putExtra("question-id", id);
                 intent.putExtra("mapId", mapId);
                 intent.putExtra("house-status", houseStatus);
@@ -137,70 +138,69 @@ public class AddressingActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(addressingAdapter);
 
-        try {
+
+        new Handler().postDelayed(() -> {
             List<AddressingWithHolders> addressingWithHoldersSelect = addressingViewModel.fetchAddressing(mapId);
-            addressingAdapter.start(addressingWithHoldersSelect.stream().filter(addressing -> !addressing.addressing.getStatus().equals(5)).collect(Collectors.toList()));
+            addressingAdapter.start(addressingWithHoldersSelect.stream()
+                    .filter(addressing -> !addressing.inquireV1Entity.getStatus().equals(5)).collect(Collectors.toList()));
+        }, 0);
 
-            Button createNew = findViewById(R.id.createNew);
-            createNew.setOnClickListener(view -> {
+        Button createNew = findViewById(R.id.createNew);
+        createNew.setOnClickListener(view -> {
 
-                if (houseStatus == 2) {
-                    Alerter.create(this)
-                            .setTitle("შეტყობინება")
-                            .setBackgroundColorRes(R.color.yellow)
-                            .setText("ახალი კითხვარის დასამატებლად დააჭირეთ ‘’შენობაზე მუშაობის გაგრძელებას’’, ხოლო შემდეგ დაამატეთ დაამატეთ ახალი კითხვარი").setDuration(5000).show();
-                    return;
-                }
-
-                itemIndex = null;
-                Addressing findNewestAddressing = addressingViewModel.findNewestR(mapId);
-
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.putExtra("mapId", mapId);
-                intent.putExtra("addressing-index", (findNewestAddressing != null) ? findNewestAddressing.getIndex() + 1 : 1);
-                AddressingActivityResult.launch(intent);
-            });
-
-            Button end = findViewById(R.id.end);
             if (houseStatus == 2) {
-                end.setText("შენობაზე მუშაობის გაგრძელება");
+                Alerter.create(this)
+                        .setTitle("შეტყობინება")
+                        .setBackgroundColorRes(R.color.yellow)
+                        .setText("ახალი კითხვარის დასამატებლად დააჭირეთ ‘’შენობაზე მუშაობის გაგრძელებას’’, ხოლო შემდეგ დაამატეთ დაამატეთ ახალი კითხვარი").setDuration(5000).show();
+                return;
             }
 
-            end.setOnClickListener(view -> {
-                String houseChangeText = (houseStatus == 2) ? "ნამდვილად გსურთ შენობაზე მუშაობის გაგრძელება?" : "ნამდვილად გსურთ შენობაზე მუშაობის დასრულება?’";
-                AlertFeature.getInstance(AddressingActivity.this)
-                        .setTitle("შეტყობინება")
-                        .setText(houseChangeText)
-                        .setNeutralButton("არა", (dialogInterface, i) -> dialogInterface.dismiss())
-                        .setPositiveButton("დიახ", (dialogInterface, i) -> { dialogInterface.dismiss();
-                            if (addressingWithHoldersSelect.isEmpty() && addressingAdapter.getItemCount() == 0) {
+            itemIndex = null;
+            InquireV1Entity findNewestInquireV1Entity = addressingViewModel.findNewestR(mapId);
 
-                                Alerter.create(this)
-                                        .setTitle("შეტყობინება")
-                                        .setBackgroundColorRes(R.color.yellow)
-                                        .setText("შენობაზე კითხვარის დასასრულებლად საჭიროა შეივსოს მინიმუმ ერთი კითხვარი").setDuration(5000).show();
+            Intent intent = new Intent(getApplicationContext(), InquireActivityV1.class);
+            intent.putExtra("mapId", mapId);
+            intent.putExtra("addressing-index", (findNewestInquireV1Entity != null) ? findNewestInquireV1Entity.getIndex() + 1 : 1);
+            AddressingActivityResult.launch(intent);
+        });
 
-                            } else if (addressingAdapter.getResponse().stream().anyMatch(addressing -> addressing.addressing.getStatus().equals(2))) {
-
-                                Alerter.create(this)
-                                        .setTitle("შეტყობინება")
-                                        .setBackgroundColorRes(R.color.yellow)
-                                        .setText("შენობაზე კითხვარის დასასრულებლად საჭიროა დაბრუნებული კითხვარების რედაკტირება").setDuration(5000).show();
-                            } else {
-
-                                Intent up = new Intent(AddressingActivity.this, MapActivity.class);
-                                SharedPref.write("is_end", (houseStatus == 2) ? 1 : 2);
-                                up.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NO_HISTORY);
-                                startActivity(up);
-                                finishAffinity();
-                            }
-                        }).init();
-                AlertFeature.show();
-            });
-
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
+        Button end = findViewById(R.id.end);
+        if (houseStatus == 2) {
+            end.setText("შენობაზე მუშაობის გაგრძელება");
         }
+
+        end.setOnClickListener(view -> {
+            String houseChangeText = (houseStatus == 2) ? "ნამდვილად გსურთ შენობაზე მუშაობის გაგრძელება?" : "ნამდვილად გსურთ შენობაზე მუშაობის დასრულება?’";
+            AlertFeature.getInstance(AddressingActivity.this)
+                    .setTitle("შეტყობინება")
+                    .setText(houseChangeText)
+                    .setNeutralButton("არა", (dialogInterface, i) -> dialogInterface.dismiss())
+                    .setPositiveButton("დიახ", (dialogInterface, i) -> { dialogInterface.dismiss();
+                        if (addressingAdapter.getItemCount() == 0) {
+
+                            Alerter.create(this)
+                                    .setTitle("შეტყობინება")
+                                    .setBackgroundColorRes(R.color.yellow)
+                                    .setText("შენობაზე კითხვარის დასასრულებლად საჭიროა შეივსოს მინიმუმ ერთი კითხვარი").setDuration(5000).show();
+
+                        } else if (addressingAdapter.getResponse().stream().anyMatch(addressing -> addressing.inquireV1Entity.getStatus().equals(2))) {
+
+                            Alerter.create(this)
+                                    .setTitle("შეტყობინება")
+                                    .setBackgroundColorRes(R.color.yellow)
+                                    .setText("შენობაზე კითხვარის დასასრულებლად საჭიროა დაბრუნებული კითხვარების რედაკტირება").setDuration(5000).show();
+                        } else {
+
+                            Intent up = new Intent(AddressingActivity.this, MapActivity.class);
+                            SharedPref.write("is_end", (houseStatus == 2) ? 1 : 2);
+                            up.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            startActivity(up);
+                            finishAffinity();
+                        }
+                    }).init();
+            AlertFeature.show();
+        });
 
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowHomeEnabled(true);

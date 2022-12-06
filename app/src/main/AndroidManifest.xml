@@ -46,7 +46,7 @@
             android:exported="false"
             android:theme="@style/Theme.TestApplication.NoActionBar" />
         <activity
-            android:name="com.geostat.census_2024.RollbackActivity"
+            android:name="com.geostat.census_2024.ui.rollback.RollbackActivity"
             android:exported="false"
             android:parentActivityName="com.geostat.census_2024.ui.map.MapActivity"/>
         <activity
@@ -54,8 +54,10 @@
             android:exported="false"
             android:parentActivityName="com.geostat.census_2024.ui.map.MapActivity" />
         <activity
-            android:name="com.geostat.census_2024.ui.fragment.stepper.MainActivity"
+            android:name="com.geostat.census_2024.ui.inquire_v1.stepper.InquireActivityV1"
             android:exported="false"
+            android:windowSoftInputMode="stateHidden"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName="com.geostat.census_2024.ui.addressing.AddressingActivity" />
     </application>
 

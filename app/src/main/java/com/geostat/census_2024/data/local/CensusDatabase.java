@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.geostat.census_2024.data.local.dai.AddressDao;
@@ -13,19 +14,20 @@ import com.geostat.census_2024.data.local.dai.AddressingDao;
 import com.geostat.census_2024.data.local.dai.BuildingTypeDao;
 import com.geostat.census_2024.data.local.dai.LivingStatusDao;
 import com.geostat.census_2024.data.local.dai.UserDao;
-import com.geostat.census_2024.data.local.entities.Address;
-import com.geostat.census_2024.data.local.entities.Addressing;
-import com.geostat.census_2024.data.local.entities.BuildingType;
-import com.geostat.census_2024.data.local.entities.Holder;
-import com.geostat.census_2024.data.local.entities.LivingStatus;
+import com.geostat.census_2024.data.local.entities.AddressEntity;
+import com.geostat.census_2024.data.local.entities.InquireActivityV1DateStatusEntity;
+import com.geostat.census_2024.data.local.entities.InquireV1Entity;
+import com.geostat.census_2024.data.local.entities.BuildingTypeEntity;
+import com.geostat.census_2024.data.local.entities.InquireV1HolderEntity;
+import com.geostat.census_2024.data.local.entities.LivingStatusEntity;
 import com.geostat.census_2024.data.local.entities.SupervisionEntity;
-import com.geostat.census_2024.data.local.entities.Tag;
-import com.geostat.census_2024.data.local.entities.User;
+import com.geostat.census_2024.data.local.entities.TagEntity;
+import com.geostat.census_2024.data.local.entities.UserEntity;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = { User.class, Address.class, Addressing.class, Holder.class, SupervisionEntity.class, BuildingType.class, LivingStatus.class, Tag.class }, version = 2, exportSchema = true)
+@Database(entities = { UserEntity.class, AddressEntity.class, InquireV1Entity.class, InquireActivityV1DateStatusEntity.class, InquireV1HolderEntity.class, SupervisionEntity.class, BuildingTypeEntity.class, LivingStatusEntity.class, TagEntity.class }, version = 3, exportSchema = true)
 public abstract class CensusDatabase extends RoomDatabase {
 
     private static volatile CensusDatabase INSTANCE;
@@ -55,6 +57,13 @@ public abstract class CensusDatabase extends RoomDatabase {
                         public void onOpen (@NonNull SupportSQLiteDatabase db) {
 
                             // do something every time database is open
+                        }
+                    }).addMigrations(new Migration(2,3) {
+                        @Override
+                        public void migrate(@NonNull SupportSQLiteDatabase database) {
+                            database.execSQL("CREATE TABLE IF NOT EXISTS `addressing_date_statuses` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `addressing_id` INTEGER, `date_status_id` INTEGER, `date` INTEGER DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY(`addressing_id`) REFERENCES `addressings`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )");
+                            database.execSQL("CREATE INDEX IF NOT EXISTS `index_addressing_date_statuses_addressing_id` ON `addressing_date_statuses` (`addressing_id`)");
+                            database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_addressing_date_statuses_id` ON `addressing_date_statuses` (`id`)");
                         }
                     }).build(); // fallbackToDestructiveMigration .allowMainThreadQueries().fallbackToDestructiveMigration()
 

@@ -6,7 +6,10 @@ import com.geostat.census_2024.architecture.App;
 import com.geostat.census_2024.architecture.future.CallbackFuture;
 import com.geostat.census_2024.data.local.CensusDatabase;
 import com.geostat.census_2024.data.local.dai.UserDao;
-import com.geostat.census_2024.data.request.User;
+import com.geostat.census_2024.data.local.entities.UserEntity;
+import com.geostat.census_2024.data.model.UserModel;
+import com.geostat.census_2024.data.request.model.UserRequestModel;
+import com.geostat.census_2024.data.response.Result;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -34,26 +37,26 @@ public class LoginDataSource {
         lgnUrl = ((App) application).LGN_URL;
     }
 
-    public Long insert(com.geostat.census_2024.data.local.entities.User user) throws ExecutionException, InterruptedException {
-        return db.censusWriterExecutor.submit(() -> userDao.insert(user)).get();
+    public Long insert(UserEntity userEntity) throws ExecutionException, InterruptedException {
+        return db.censusWriterExecutor.submit(() -> userDao.insert(userEntity)).get();
     }
 
     @SuppressWarnings("unchecked")
-    public Result<com.geostat.census_2024.data.model.User> login(String username, String password) {
+    public Result<UserModel> login(String username, String password) {
 
         try {
             // TODO: handle loggedInUser authentication
-            com.geostat.census_2024.data.local.entities.User localeUser = localeAuth(username);
-            if (localeUser != null) {
+            UserEntity localeUserEntity = localeAuth(username);
+            if (localeUserEntity != null) {
 
-                com.geostat.census_2024.data.model.User user = new com.geostat.census_2024.data.model.User();
-                user.setId(localeUser.getId());
-                user.setUserName(localeUser.getUserName());
-                user.setPassword(localeUser.getPassword());
-                user.setToken(localeUser.getToken());
-                user.setDistrictNum(localeUser.getUserName());
+                UserModel userModel = new UserModel();
+                userModel.setId(localeUserEntity.getId());
+                userModel.setUserName(localeUserEntity.getUserName());
+                userModel.setPassword(localeUserEntity.getPassword());
+                userModel.setToken(localeUserEntity.getToken());
+                userModel.setDistrictNum(localeUserEntity.getUserName());
 
-                return new Result.Success<com.geostat.census_2024.data.model.User>(user, "locale");
+                return new Result.Success<UserModel>(userModel, "locale");
 
             } else {
 
@@ -63,12 +66,12 @@ public class LoginDataSource {
                     Gson gson = new Gson();
                     String userJson = response.header("user");
 
-                    com.geostat.census_2024.data.model.User user = gson.fromJson(userJson, com.geostat.census_2024.data.model.User.class);
-                    user.setToken(response.header("token"));
-                    user.setPassword(password);
-                    user.setDistrictNum(user.getUserName());
+                    UserModel userModel = gson.fromJson(userJson, UserModel.class);
+                    userModel.setToken(response.header("token"));
+                    userModel.setPassword(password);
+                    userModel.setDistrictNum(userModel.getUserName());
 
-                    return new Result.Success<com.geostat.census_2024.data.model.User>(user, "server");
+                    return new Result.Success<UserModel>(userModel, "server");
                 } else {
                     return new Result.Error<Exception>(new IOException("Error logging in"));
                 }
@@ -80,14 +83,14 @@ public class LoginDataSource {
         }
     }
 
-    public com.geostat.census_2024.data.local.entities.User localeAuth (String username) throws ExecutionException, InterruptedException {
+    public UserEntity localeAuth (String username) throws ExecutionException, InterruptedException {
         return db.censusWriterExecutor.submit(() -> userDao.find(username)).get();
     }
 
     public Response serverAuth (String username, String password) throws ExecutionException, InterruptedException {
 
         Gson gson = new GsonBuilder().serializeNulls().create();
-        String json = gson.toJson(new User(username, password));
+        String json = gson.toJson(new UserRequestModel(username, password));
 
         OkHttpClient client = new OkHttpClient();
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");

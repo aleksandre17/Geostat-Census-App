@@ -4,13 +4,13 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import com.geostat.census_2024.data.local.entities.User;
+import com.geostat.census_2024.data.local.entities.UserEntity;
 
 @Dao
 public interface UserDao {
     @Insert
-    Long insert(User user);
+    Long insert(UserEntity userEntity);
 
     @Query("select * from users where userName = :userName")
-    User find(String userName);
+    UserEntity find(String userName);
 }

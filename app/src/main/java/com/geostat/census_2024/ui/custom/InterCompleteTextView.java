@@ -15,7 +15,7 @@ import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
 import com.geostat.census_2024.data.model.SpinerModel;
-import com.geostat.census_2024.handlers.ISpinnerItemClickHandler;
+import com.geostat.census_2024.architecture.inter.handler.ISpinnerItemClickHandler;
 
 import java.util.List;
 

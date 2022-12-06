@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -28,39 +27,38 @@ import com.esri.arcgisruntime.mapping.GeoElement;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.geostat.census_2024.IndexActivity;
 import com.geostat.census_2024.R;
-import com.geostat.census_2024.architecture.ArcgisFeatureManager;
+import com.geostat.census_2024.architecture.manager.ArcgisManager;
 import com.geostat.census_2024.architecture.task.AsyncTask;
 import com.geostat.census_2024.architecture.task.AsyncTaskEasy;
-import com.geostat.census_2024.controller.ArcgisController;
-import com.geostat.census_2024.controller.IMapController;
+import com.geostat.census_2024.data.repository.MapRepository;
 import com.geostat.census_2024.data.LoginDataSource;
-import com.geostat.census_2024.data.LoginRepository;
+import com.geostat.census_2024.data.repository.LoginRepository;
 import com.geostat.census_2024.data.model.LayerModel;
-import com.geostat.census_2024.data.model.User;
-import com.geostat.census_2024.inter.ThatActivity;
-import com.geostat.census_2024.service.SyncService;
+import com.geostat.census_2024.data.model.UserModel;
+import com.geostat.census_2024.architecture.inter.ThatActivity;
+import com.geostat.census_2024.architecture.service.SyncService;
 import com.geostat.census_2024.ui.addressing.AddressingActivity;
 import com.geostat.census_2024.ui.map.event.listener.MapTouchListener;
-import com.geostat.census_2024.ui.map.feature.MapFeatureAlert;
-import com.geostat.census_2024.ui.map.fragment.FeatureEditableFragment;
+import com.geostat.census_2024.ui.fragment.map.MapFeatureAlert;
+import com.geostat.census_2024.ui.fragment.map.FeatureEditableFragment;
 import com.geostat.census_2024.ui.map.model.MapViewModel;
-import com.geostat.census_2024.ui.map.task.RunnableRaster;
-import com.geostat.census_2024.ui.map.task.RunnableVector;
-import com.geostat.census_2024.ui.map.widjet.Callout;
+import com.geostat.census_2024.architecture.task.map.RunnableRaster;
+import com.geostat.census_2024.architecture.task.map.RunnableVector;
+import com.geostat.census_2024.architecture.widjet.Callout;
 import com.geostat.census_2024.utility.SharedPref;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class MapActivity extends IndexActivity implements ThatActivity<AppCompatActivity>, RunnableRaster.IfRasterLoadListener, MapTouchListener.MapTouchHandler, MapFeatureAlert.OnButtonClickedListener, FeatureEditableFragment.EditableFeature, Callout.NonResidentClickHandler {
 
     private MapViewModel mapViewModel;
     private MapView mapView;
-    private User user;
-    private ArcgisController arcgisController;
+    private UserModel userModel;
+    private ArcgisManager arcgisManager;
 
 
     private final ActivityResultLauncher<Intent> mapActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<>() {
@@ -68,7 +66,7 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
         public void onActivityResult(ActivityResult result) {
             if (result.getResultCode() == RESULT_OK) {
 
-                Feature feature = arcgisController.findRollbackQuestionnaireLocation(Objects.requireNonNull(result.getData()).getStringExtra("house_code"), mapViewModel);
+                Feature feature = arcgisManager.getMapService().findRollbackQuestionnaireLocation(Objects.requireNonNull(result.getData()).getStringExtra("house_code"), mapViewModel);
                 if (feature != null) {
                     Objects.requireNonNull(getMapViewModel().getTouchableLayer().getValue()).clearSelection();
                     Objects.requireNonNull(getMapViewModel().getTouchableLayer().getValue()).selectFeature(feature);
@@ -91,20 +89,20 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
         try {
             new AsyncTask<>() {
                 @Override
-                public void first() { ArcgisController.setPackagePath(getExternalFilesDir(null).getPath() + "/samgori.gpkg");
-                    arcgisController = ArcgisController.getInstance(MapActivity.this);
-                    arcgisController.setFeatureManager(new ArcgisFeatureManager(userArea -> {
+                public void first() {
+                    arcgisManager = ArcgisManager.getInstance(MapActivity.this);
+                    arcgisManager.setFeatureManager(userArea -> {
                         mapViewModel.setUserArea(userArea);
-                        user = LoginRepository.getInstance(new LoginDataSource(getApplication())).updateUserProps(userArea.getAttributes());
-                    }));
+                        userModel = LoginRepository.getInstance(new LoginDataSource(getApplication())).updateUserProps(userArea.getAttributes());
+                    });
                 }
 
                 @Override
                 public void taskRun() {
-                    if (arcgisController.getGeoPackage() == null) arcgisController.initPackage();
-                    if (arcgisController.getGeoPackage().getLoadStatus() == LoadStatus.NOT_LOADED) {
-                        arcgisController.getGeoPackage().loadAsync();
-                        arcgisController.getGeoPackage().addDoneLoadingListener(() -> mapViewModel.setIsLoadPkg(true));
+                    if (arcgisManager.getGeoPackage() == null) arcgisManager.initPackage();
+                    if (arcgisManager.getGeoPackage().getLoadStatus() == LoadStatus.NOT_LOADED) {
+                        arcgisManager.getGeoPackage().loadAsync();
+                        arcgisManager.getGeoPackage().addDoneLoadingListener(() -> mapViewModel.setIsLoadPkg(true));
                     }
                 }
 
@@ -118,15 +116,15 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
 
         mapViewModel.getIsLoadPkg().observe(MapActivity.this, aBoolean -> {
             if (aBoolean) {
-                new AsyncTaskEasy().execute(new RunnableRaster(arcgisController.getGeoPackage(), MapActivity.this));
+                new AsyncTaskEasy().execute(new RunnableRaster(arcgisManager.getGeoPackage(), MapActivity.this));
             }
         });
 
         mapViewModel.getIsLoadRaster().observe(MapActivity.this, aBoolean -> {
             if (aBoolean) {
-                User user = LoginRepository.getInstance(new LoginDataSource(getApplication())).getUser();
-                Integer userLocation = Integer.valueOf(Objects.toString(user.getDistrictNum()));
-                new AsyncTaskEasy().execute(new RunnableVector(userLocation, arcgisController.getGeoPackage(), MapActivity.this));
+                UserModel userModel = LoginRepository.getInstance(new LoginDataSource(getApplication())).getUser();
+                Integer userLocation = Integer.valueOf(Objects.toString(userModel.getDistrictNum()));
+                new AsyncTaskEasy().execute(new RunnableVector(userLocation, arcgisManager.getGeoPackage(), MapActivity.this));
             }
         });
 
@@ -156,11 +154,11 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
 //        if (getArcgisController() == null) { arcgisController = ArcgisController.getInstance(MapActivity.this);}
 //        if (getArcgisController().getGeoPackage() == null) { getArcgisController().getMapRepository().initPkg(); }
 
-        if (SharedPref.read("house-start", false)){ Callout.exit(); arcgisController.getMapRepository().updateHouseStatus(1); SharedPref.remove("house-start");}
-        if (SharedPref.read("house-clear", false)){ Callout.exit(); arcgisController.getMapRepository().updateHouseStatus(0); SharedPref.remove("house-clear");}
+        if (SharedPref.read("house-start", false)){ Callout.exit(); arcgisManager.getMapService().updateHouseStatus(1); SharedPref.remove("house-start");}
+        if (SharedPref.read("house-clear", false)){ Callout.exit(); arcgisManager.getMapService().updateHouseStatus(0); SharedPref.remove("house-clear");}
         if (SharedPref.read("is_end", 0) != 0){
             Callout.exit();
-            Feature feature = arcgisController.getMapRepository().updateHouseStatus(SharedPref.read("is_end", 0), 1);
+            Feature feature = arcgisManager.getMapService().updateHouseStatus(SharedPref.read("is_end", 0), 1);
             SharedPref.remove("is_end");
             new Handler().postDelayed(() -> editFeatureListener(feature), 1);
 
@@ -172,8 +170,8 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
     protected void onDestroy() {
 
         Callout.remove();
-        arcgisController.clear();
-        arcgisController = null;
+        arcgisManager.clear();
+        arcgisManager = null;
         mapView.dispose();
         SyncService.clear();
 
@@ -220,7 +218,7 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
             .setMessage("დარწმუნდით, რომ ობიექტი განეკუთვნება "+ text)
             .setNeutralButton("არა", (dialogInterface, i) -> dialogInterface.cancel())
             .setPositiveButton("დიახ", (dialogInterface, i) -> {
-                ((IMapController) getArcgisController()).updateSetNonResident(feature);
+                ((ArcgisManager) getArcgisController()).getMapService().updateSetNonResident(feature);
                 tryUpdate.update();
             }).create().show();
     }
@@ -247,7 +245,7 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
 
     @Override
     public void editFeatureListener(Feature feature) {
-        LayerModel layerModel = getArcgisController().edit(feature);
+        LayerModel layerModel = getArcgisController().getMapService().edit(feature);
 
         Intent intent = new Intent(MapActivity.this, AddressingActivity.class);
         intent.putExtra("m", layerModel);
@@ -267,7 +265,7 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
     @Override
     public void newFeatureInsertListener(Point tap) throws Exception {
 
-        ((IMapController) getArcgisController()).create(() -> {
+        getArcgisController().getMapService().create(() -> {
             MapFeatureAlert.setActionType("insert");
             MapFeatureAlert.setGraphics(tap);
             MapFeatureAlert.setTitle(MapActivity.this.getString(R.string.dialog_confirm_insert_essage));
@@ -279,13 +277,19 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
 
     @Override
     public void onDeleteFeatureClicked(Feature feature) {
-        com.esri.arcgisruntime.concurrent.ListenableFuture<java.lang.Void> delete = ((IMapController) getArcgisController()).destroy(feature, getMapViewModel().getTouchableLayer().getValue());
-        delete.addDoneListener(Callout::exit);
+        try {
+            com.esri.arcgisruntime.concurrent.ListenableFuture<java.lang.Void> delete = getArcgisController().getMapService().waitDestroyPermission(feature, getMapViewModel().getTouchableLayer().getValue());
+            getMapViewModel().updateAddressingStatus(feature, 5);
+            delete.addDoneListener(Callout::exit);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void edit(LayerModel layerModel) {
-        ((IMapController) getArcgisController()).update(layerModel, () -> {
+        getArcgisController().getMapService().update(layerModel, () -> {
             new Thread(() -> { getDrawerLayout().closeDrawer(GravityCompat.START); runOnUiThread(Callout::exit); }).start();
             getMapViewModel().setSelectedFeatureFromMapClickedArea(null);
             return null;
@@ -296,7 +300,7 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
 
     @Override
     public void onInsertFeatureClicked(Point tapPoint) {
-        ((IMapController) getArcgisController()).store(tapPoint, getMapViewModel().getTouchableLayer().getValue());
+        getArcgisController().getMapService().store(tapPoint, getMapViewModel().getTouchableLayer().getValue());
         Callout.exit();
     }
 
@@ -324,13 +328,13 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
     public DrawerLayout getDrawerLayout() { return drawerLayout; }
 
     @Override
-    public User getUser() { return user; }
+    public UserModel getUser() { return userModel; }
 
     @Override
     public MapView getMapView() { return mapView; }
 
     @Override
-    public ArcgisController getArcgisController() { return arcgisController; }
+    public ArcgisManager getArcgisController() { return arcgisManager; }
 
 
     ///

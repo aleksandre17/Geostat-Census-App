@@ -14,12 +14,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.geostat.census_2024.R;
 import com.geostat.census_2024.data.local.realtions.AddressingWithHolders;
-import com.geostat.census_2024.handlers.IndexAdapterItemClickHandlers;
-import com.geostat.census_2024.handlers.IndexAdapterItemClickHandlersWithMap;
+import com.geostat.census_2024.architecture.inter.handler.IndexAdapterItemClickHandlers;
+import com.geostat.census_2024.architecture.inter.handler.IndexAdapterItemClickHandlersWithMap;
 import com.geostat.census_2024.utility.InterDate;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 import io.github.douglasjunior.androidSimpleTooltip.SimpleTooltip;
 
@@ -63,7 +62,7 @@ public class AddressingAdapter extends RecyclerView.Adapter<AddressingAdapter.Ad
 
     @SuppressLint("NotifyDataSetChanged")
     public void add(AddressingWithHolders addressingHolder) {
-        if (response.parallelStream().noneMatch(addressingWithHolders -> addressingWithHolders.addressing.getUuid().equals(addressingHolder.addressing.getUuid()))){
+        if (response.parallelStream().noneMatch(addressingWithHolders -> addressingWithHolders.inquireV1Entity.getUuid().equals(addressingHolder.inquireV1Entity.getUuid()))){
             this.response.add(0, addressingHolder);
             notifyItemInserted(0);
         }
@@ -99,19 +98,19 @@ public class AddressingAdapter extends RecyclerView.Adapter<AddressingAdapter.Ad
         @SuppressLint("SetTextI18n")
         public static void bind(AddressingHolder holder, AddressingWithHolders addressing, int index, IndexAdapterItemClickHandlers addressingItemClickHandler) {
             TextView textView = holder.binding.findViewById(R.id.id);
-            textView.setText(addressing.addressing.getIndex().toString());
+            textView.setText(addressing.inquireV1Entity.getIndex().toString());
 
             ImageView statusBtn = holder.binding.findViewById(R.id.status_icon);
-            if (addressing.addressing.getStatus().equals(1)) {
+            if (addressing.inquireV1Entity.getStatus().equals(1)) {
                 statusBtn.setImageResource(R.drawable.ic_baseline_check_circle_24_3);
-            } else if (addressing.addressing.getStatus().equals(2)) {
+            } else if (addressing.inquireV1Entity.getStatus().equals(2)) {
                 statusBtn.setImageResource(R.drawable.ic_baseline_check_circle_24);
             }
 
             TextView nameView = holder.binding.findViewById(R.id.name);
-            if (addressing.holder.size() > 0) {
-                String firstName = addressing.holder.get(0).getFirstName();
-                String lastName =  addressing.holder.get(0).getLastName();
+            if (addressing.inquireV1HolderEntity.size() > 0) {
+                String firstName = addressing.inquireV1HolderEntity.get(0).getFirstName();
+                String lastName =  addressing.inquireV1HolderEntity.get(0).getLastName();
 
                 if (firstName != null && lastName != null) {
                     String nameText = firstName + " " + lastName;
@@ -124,41 +123,41 @@ public class AddressingAdapter extends RecyclerView.Adapter<AddressingAdapter.Ad
             TextView dateView = holder.binding.findViewById(R.id.date);
             TextView timeView = holder.binding.findViewById(R.id.time);
 
-            String[] dateTime = InterDate.lDate(addressing.addressing.getCreatedAt());
+            String[] dateTime = InterDate.lDate(addressing.inquireV1Entity.getCreatedAt());
             dateView.setText(dateTime[0]);
             timeView.setText(dateTime[1]);
 
             TextView buildingTypeView = holder.binding.findViewById(R.id.building_type);
-            String buildingTypeText = addressing.buildingType.getName();
+            String buildingTypeText = addressing.buildingTypeEntity.getName();
             buildingTypeView.setText(buildingTypeText);
 
 
             Button button = holder.binding.findViewById(R.id.button);
 
             if (caller.equals("addressing")) {
-                button.setOnClickListener(view -> addressingItemClickHandler.btnClickListener(addressing.addressing.getId(), holder.getLayoutPosition()));
+                button.setOnClickListener(view -> addressingItemClickHandler.btnClickListener(addressing.inquireV1Entity.getId(), holder.getLayoutPosition()));
             } else if (caller.equals("rollback")) {
-                button.setOnClickListener(view -> ((IndexAdapterItemClickHandlersWithMap) addressingItemClickHandler).btnClickListener(addressing.addressing.getId(), holder.getLayoutPosition(), addressing.addressing.getHouseCode()));
+                button.setOnClickListener(view -> ((IndexAdapterItemClickHandlersWithMap) addressingItemClickHandler).btnClickListener(addressing.inquireV1Entity.getId(), holder.getLayoutPosition(), addressing.inquireV1Entity.getHouseCode()));
             }
 
             ImageView remove = holder.binding.findViewById(R.id.remove);
-            if (houseStatus.equals(2) || addressing.addressing.getStatus().equals(2)) {
+            if (houseStatus.equals(2) || addressing.inquireV1Entity.getStatus().equals(2)) {
                 remove.setEnabled(false);
                 remove.setImageResource(R.drawable.ic_baseline_delete_24_alter);
             } else if (caller.equals("addressing")) {
-                remove.setOnClickListener(view -> addressingItemClickHandler.removeClickListener(addressing.addressing.getId(), index));
+                remove.setOnClickListener(view -> addressingItemClickHandler.removeClickListener(addressing.inquireV1Entity.getId(), index));
             } else if (caller.equals("rollback")) {
                 remove.setVisibility(View.GONE);
             }
 
 
             ImageView email = holder.binding.findViewById(R.id.email);
-            if (caller.equals("rollback") && addressing.addressing.getRollbackComment() != null && !addressing.addressing.getRollbackComment().isEmpty()) {
+            if (caller.equals("rollback") && addressing.inquireV1Entity.getRollbackComment() != null && !addressing.inquireV1Entity.getRollbackComment().isEmpty()) {
                 email.setOnClickListener(view ->
-                        new SimpleTooltip.Builder(button.getContext()).anchorView(view).text(addressing.addressing.getRollbackComment()).gravity(Gravity.TOP).build().show());
-            } else if(caller.equals("addressing") && addressing.addressing.getComment() != null && !addressing.addressing.getComment().isEmpty()) {
+                        new SimpleTooltip.Builder(button.getContext()).anchorView(view).text(addressing.inquireV1Entity.getRollbackComment()).gravity(Gravity.TOP).build().show());
+            } else if(caller.equals("addressing") && addressing.inquireV1Entity.getComment() != null && !addressing.inquireV1Entity.getComment().isEmpty()) {
                 email.setOnClickListener(view ->
-                        new SimpleTooltip.Builder(button.getContext()).anchorView(view).text(addressing.addressing.getComment()).gravity(Gravity.TOP).build().show());
+                        new SimpleTooltip.Builder(button.getContext()).anchorView(view).text(addressing.inquireV1Entity.getComment()).gravity(Gravity.TOP).build().show());
             } else {
                 email.setImageResource(R.drawable.ic_baseline_email_24_alt);
             }
@@ -168,7 +167,7 @@ public class AddressingAdapter extends RecyclerView.Adapter<AddressingAdapter.Ad
             if (caller.equals("addressing")) {
                 btnMap.setImageResource(R.drawable.ic_baseline_add_location_24_alt);;
             } else if (caller.equals("rollback")) {
-                btnMap.setOnClickListener(view -> ((IndexAdapterItemClickHandlersWithMap) addressingItemClickHandler).mapClickListener(addressing.addressing.getHouseCode()));
+                btnMap.setOnClickListener(view -> ((IndexAdapterItemClickHandlersWithMap) addressingItemClickHandler).mapClickListener(addressing.inquireV1Entity.getHouseCode()));
             }
         }
     }

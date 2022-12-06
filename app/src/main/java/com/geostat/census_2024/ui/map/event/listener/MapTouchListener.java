@@ -18,9 +18,9 @@ import com.esri.arcgisruntime.mapping.view.DefaultMapViewOnTouchListener;
 import com.esri.arcgisruntime.mapping.view.IdentifyLayerResult;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.geostat.census_2024.R;
-import com.geostat.census_2024.data.repository.MapRepository;
-import com.geostat.census_2024.inter.ThatActivity;
-import com.geostat.census_2024.ui.map.widjet.Callout;
+import com.geostat.census_2024.architecture.inter.ThatActivity;
+import com.geostat.census_2024.architecture.widjet.Callout;
+import com.geostat.census_2024.data.repository.impl.MapRepositoryImpl;
 import com.tapadoo.alerter.Alerter;
 
 import java.util.List;
@@ -74,10 +74,10 @@ public class MapTouchListener extends DefaultMapViewOnTouchListener {
         if (!exit(thatActivity.getMapViewModel().getUserArea(), tapPoint)) {
             Toast.makeText(((AppCompatActivity) thatActivity).getApplicationContext(), "არ გაქვთ ნებართვა, მოცემულ სააღწერო უბანზე!", Toast.LENGTH_LONG).show();
         } else {
-            MapRepository mapRepository = thatActivity.getArcgisController().getMapRepository();
+            MapRepositoryImpl mapRepositoryImpl = thatActivity.getArcgisController().getMapService().getMapRepository();
 
             try {
-                IdentifyLayerResult result = mapRepository.selectFeaturesFromMapTouch(mClickPoint, 10, false, 1);
+                IdentifyLayerResult result = mapRepositoryImpl.selectFeaturesFromMapTouch(mClickPoint, 10, false, 1);
                 List<GeoElement> resultGeoElements = result.getElements();
                 if (resultGeoElements.isEmpty()) {
                     mapTouchHandler.newFeatureInsertListener(tapPoint);
@@ -109,16 +109,19 @@ public class MapTouchListener extends DefaultMapViewOnTouchListener {
         } else {
 
             thatActivity.getMapViewModel().setMapClickedArea(tapPoint);
-            MapRepository mapRepository = thatActivity.getArcgisController().getMapRepository();
+            MapRepositoryImpl mapRepositoryImpl = thatActivity.getArcgisController().getMapService().getMapRepository();
 
             try {
-                IdentifyLayerResult result = mapRepository.selectFeaturesFromMapTouch(mClickPoint, 10, false, 1);
+                IdentifyLayerResult result = mapRepositoryImpl.selectFeaturesFromMapTouch(mClickPoint, 10, false, 1);
                 List<GeoElement> resultGeoElements = result.getElements();
                 if (!resultGeoElements.isEmpty()) {
                     Feature feature = (Feature) result.getElements().get(0);
                     if (Objects.equals(feature.getAttributes().get("status"), 4)) {
                         Alerter.create(thatActivity.init())
                                 .setTitle("შეტყობინება").setBackgroundColorRes(R.color.yellow).setText("დაელოდეთ წაშლის დადასტურებას!").setDuration(5000).show();
+                    } else if (Objects.equals(feature.getAttributes().get("status"), 5)) {
+                        Alerter.create(thatActivity.init())
+                                .setTitle("შეტყობინება").setBackgroundColorRes(R.color.yellow).setText("შენობა წაიშალა!").setDuration(5000).show();
                     } else {
                         mapTouchHandler.ifSelectedHouse(tapPoint, resultGeoElements);
                     }

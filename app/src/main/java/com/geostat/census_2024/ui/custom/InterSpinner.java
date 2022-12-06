@@ -1,22 +1,28 @@
 package com.geostat.census_2024.ui.custom;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.BindingAdapter;
 import androidx.databinding.InverseBindingAdapter;
 import androidx.databinding.InverseBindingListener;
 
-import com.geostat.census_2024.data.local.entities.ISpinner;
-import com.geostat.census_2024.handlers.IfInterSpinnerClickHandler;
+import com.geostat.census_2024.data.inter.ISpinner;
+import com.geostat.census_2024.architecture.inter.handler.IfInterSpinnerClickHandler;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
 
 public class InterSpinner extends androidx.appcompat.widget.AppCompatAutoCompleteTextView {
 
+    public int flag;
     @Nullable
     private Integer selected = null;
     private IfInterSpinnerClickHandler clickListener;
@@ -60,6 +66,22 @@ public class InterSpinner extends androidx.appcompat.widget.AppCompatAutoComplet
         });
     }
 
+
+    @Override
+    public boolean onCheckIsTextEditor() {
+        return false;
+    }
+
+    @Override
+    public void setOnFocusChangeListener(OnFocusChangeListener l) {
+        super.setOnFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                Log.d("onFocusChange", "onFocusChange: " + b);
+            }
+        });
+    }
+
     @BindingAdapter(value = { "value" }, requireAll = false)
     public static void setValue(InterSpinner view, @Nullable Integer result) {
         // Log.d("TAGTAG", "setValue: " + result);
@@ -73,6 +95,7 @@ public class InterSpinner extends androidx.appcompat.widget.AppCompatAutoComplet
                         view.setText(item.getName());
                         view.getFilter().filter(null);
                         view.setSelection(view.getText().length());
+                        view.dismissDropDown();
                         break;
                     }
                 }

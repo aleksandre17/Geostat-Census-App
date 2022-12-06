@@ -8,8 +8,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 import com.geostat.census_2024.R;
-import com.geostat.census_2024.inter.ThatActivity;
-import com.geostat.census_2024.ui.map.widjet.Callout;
+import com.geostat.census_2024.architecture.inter.ThatActivity;
+import com.geostat.census_2024.architecture.widjet.Callout;
 
 public class ListenDrawer implements DrawerLayout.DrawerListener {
 

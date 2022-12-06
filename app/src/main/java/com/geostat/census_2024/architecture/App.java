@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.geostat.census_2024.data.LoginDataSource;
-import com.geostat.census_2024.data.LoginRepository;
+import com.geostat.census_2024.data.repository.LoginRepository;
 import com.geostat.census_2024.ui.login.LoginActivity;
 import com.geostat.census_2024.utility.SharedPref;
 
@@ -19,6 +19,9 @@ public class App extends Application {
 
     public final String SYNC_URL = "http://192.168.1.58:8080/addressing";
     public final String LGN_URL = "http://192.168.1.58:8080/users/login";
+    public final String HOUSES_REMOVE_URL = "http://192.168.1.58:8080/addressing/remove-houses-by-house-code";
+
+    public final String GPK_NAME = "samgori";
 
     Date dif;
 

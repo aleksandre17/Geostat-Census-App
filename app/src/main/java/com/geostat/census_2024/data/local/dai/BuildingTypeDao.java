@@ -3,7 +3,7 @@ package com.geostat.census_2024.data.local.dai;
 import androidx.room.Dao;
 import androidx.room.Query;
 
-import com.geostat.census_2024.data.local.entities.BuildingType;
+import com.geostat.census_2024.data.local.entities.BuildingTypeEntity;
 
 import java.util.List;
 
@@ -11,5 +11,5 @@ import java.util.List;
 public interface BuildingTypeDao {
 
     @Query("SELECT * FROM cl_building_types")
-    List<BuildingType> getAllBuildingTypes();
+    List<BuildingTypeEntity> getAllBuildingTypes();
 }
