@@ -47,7 +47,7 @@ public class MigrationService {
             RequestBody body = RequestBody.create(JSON, districtArealJson);
 
             Request request = new Request.Builder()
-                    .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyQGdtYWlsLmNvbSIsImV4cCI6MTY2Njk1MDE1NX0.u6wD6MmqnZD3HdtKGk_8qg5Qr9HOGdp3iikyGgZnoMDHexk2W171beuKeuRE9JNu5YDrG0DvBCcp-n_7sD_5tQ")
+                    .header("Authorization", "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ1c2VyQGdtYWlsLmNvbSIsImV4cCI6MTY3MTQzOTgyMn0.zHOfLEeiFozfnCrBkttVGcqagjRSovybMs8sbq65XxPbxFFrU8VrsvvuMiZUUwicfj_boTAdT2byysLPjkYHVA")
                     .url("http://192.168.1.58:8080/users/create-users")
                     .post(body)
                     .build();

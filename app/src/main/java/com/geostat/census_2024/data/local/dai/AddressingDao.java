@@ -29,7 +29,6 @@ public abstract class AddressingDao extends BaseDai<InquireV1Entity> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract Long insertSupervision(SupervisionEntity supervisionEntity);
 
-
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public abstract Long insertAddressingDateStatuses(InquireActivityV1DateStatusEntity inquireActivityV1DateStatusEntity);

@@ -1,7 +1,9 @@
 package com.geostat.census_2024.architecture.task.map;
 
 import android.annotation.SuppressLint;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.os.Handler;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import com.esri.arcgisruntime.mapping.Viewpoint;
 import com.esri.arcgisruntime.symbology.SimpleMarkerSymbol;
 import com.esri.arcgisruntime.symbology.Symbol;
 import com.esri.arcgisruntime.symbology.UniqueValueRenderer;
+import com.geostat.census_2024.IndexActivity;
 import com.geostat.census_2024.architecture.inter.ThatActivity;
 import com.geostat.census_2024.ui.map.model.MapViewModel;
 
@@ -96,6 +99,8 @@ public class RunnableVector implements Runnable {
 
         geoPackageVector = null;
         activity.getMapViewModel().setIsLoadRaster(false);
+        AppCompatActivity app = activity.init();
+        app.runOnUiThread(() -> new Handler().postDelayed(((IndexActivity) app)::_unlockOrientation, 3000));
 
     }
 

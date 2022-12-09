@@ -44,7 +44,7 @@ public class AddressingViewModel extends AndroidViewModel {
         return addressingRepository.removeAddress(id);
     }
 
-    public List<AddressingWithHolders> getRollbackAddressings() throws ExecutionException, InterruptedException {
+    public List<AddressingWithHolders> getRollbackAddressings() {
         return addressingRepository.getRollbackAddressings();
     }
 

@@ -20,6 +20,7 @@ public class App extends Application {
     public final String SYNC_URL = "http://192.168.1.58:8080/addressing";
     public final String LGN_URL = "http://192.168.1.58:8080/users/login";
     public final String HOUSES_REMOVE_URL = "http://192.168.1.58:8080/addressing/remove-houses-by-house-code";
+    public final String HOUSES_FORCE_INSERT = "http://192.168.1.58:8080/addressing/force-insert";
 
     public final String GPK_NAME = "samgori";
 

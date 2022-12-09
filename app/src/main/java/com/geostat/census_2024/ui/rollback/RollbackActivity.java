@@ -2,6 +2,7 @@ package com.geostat.census_2024.ui.rollback;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 
 import androidx.activity.result.ActivityResult;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class RollbackActivity extends AppCompatActivity {
 
@@ -113,13 +115,10 @@ public class RollbackActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(rollbackAddressingAdapter);
 
-        try {
+        new Handler().postDelayed(() -> {
             List<AddressingWithHolders> rollbackAddressings = addressingViewModel.getRollbackAddressings();
             rollbackAddressingAdapter.start(rollbackAddressings);
-
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        }, 0);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

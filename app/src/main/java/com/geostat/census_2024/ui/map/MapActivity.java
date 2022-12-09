@@ -2,6 +2,7 @@ package com.geostat.census_2024.ui.map;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,24 +28,23 @@ import com.esri.arcgisruntime.mapping.GeoElement;
 import com.esri.arcgisruntime.mapping.view.MapView;
 import com.geostat.census_2024.IndexActivity;
 import com.geostat.census_2024.R;
+import com.geostat.census_2024.architecture.inter.ThatActivity;
 import com.geostat.census_2024.architecture.manager.ArcgisManager;
+import com.geostat.census_2024.architecture.service.SyncService;
 import com.geostat.census_2024.architecture.task.AsyncTask;
 import com.geostat.census_2024.architecture.task.AsyncTaskEasy;
-import com.geostat.census_2024.data.repository.MapRepository;
-import com.geostat.census_2024.data.LoginDataSource;
-import com.geostat.census_2024.data.repository.LoginRepository;
-import com.geostat.census_2024.data.model.LayerModel;
-import com.geostat.census_2024.data.model.UserModel;
-import com.geostat.census_2024.architecture.inter.ThatActivity;
-import com.geostat.census_2024.architecture.service.SyncService;
-import com.geostat.census_2024.ui.addressing.AddressingActivity;
-import com.geostat.census_2024.ui.map.event.listener.MapTouchListener;
-import com.geostat.census_2024.ui.fragment.map.MapFeatureAlert;
-import com.geostat.census_2024.ui.fragment.map.FeatureEditableFragment;
-import com.geostat.census_2024.ui.map.model.MapViewModel;
 import com.geostat.census_2024.architecture.task.map.RunnableRaster;
 import com.geostat.census_2024.architecture.task.map.RunnableVector;
 import com.geostat.census_2024.architecture.widjet.Callout;
+import com.geostat.census_2024.data.LoginDataSource;
+import com.geostat.census_2024.data.model.LayerModel;
+import com.geostat.census_2024.data.model.UserModel;
+import com.geostat.census_2024.data.repository.LoginRepository;
+import com.geostat.census_2024.ui.addressing.AddressingActivity;
+import com.geostat.census_2024.ui.fragment.map.FeatureEditableFragment;
+import com.geostat.census_2024.ui.fragment.map.MapFeatureAlert;
+import com.geostat.census_2024.ui.map.event.listener.MapTouchListener;
+import com.geostat.census_2024.ui.map.model.MapViewModel;
 import com.geostat.census_2024.utility.SharedPref;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -276,13 +276,12 @@ public class MapActivity extends IndexActivity implements ThatActivity<AppCompat
     }
 
     @Override
-    public void onDeleteFeatureClicked(Feature feature) {
+    public void onDeleteFeatureClicked(Feature feature, String motive) {
         try {
             com.esri.arcgisruntime.concurrent.ListenableFuture<java.lang.Void> delete = getArcgisController().getMapService().waitDestroyPermission(feature, getMapViewModel().getTouchableLayer().getValue());
             getMapViewModel().updateAddressingStatus(feature, 5);
             delete.addDoneListener(Callout::exit);
         } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
             e.printStackTrace();
         }
     }

@@ -4,7 +4,9 @@ package com.geostat.census_2024;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,6 +52,7 @@ public abstract class IndexActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         isLoggedIn();
         setContentView(getLayoutResource());
+        _lockOrientation();
 
         if(!hasPermissions(this, PERMISSIONS)){
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL);
@@ -75,6 +78,19 @@ public abstract class IndexActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    public void _lockOrientation() {
+        if (super.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT);
+        } else {
+            super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
+        }
+    }
+
+    public void _unlockOrientation() {
+        super.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
     public static boolean hasPermissions(AppCompatActivity app, String... permissions) {
@@ -127,6 +143,7 @@ public abstract class IndexActivity extends AppCompatActivity {
             // startActivity(intent);
             getActivityResultLauncher().launch(intent);
         } else if (item.getItemId() == R.id.action_settings) {
+            // HousesSentService.getInstance(getActivity()).sync();
             SyncService.getInstance(getActivity()).sync();
         }
 

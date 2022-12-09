@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.esri.arcgisruntime.data.Feature;
 import com.esri.arcgisruntime.geometry.Point;
@@ -111,7 +112,8 @@ public class Callout {
         MapFeatureAlert.setTitle(activity.getString(R.string.dialog_confirm_delete_message));
 
         String id = (feature.getAttributes().get("fid") != null) ? String.valueOf(feature.getAttributes().get("fid")) : null;
-        MapFeatureAlert.newInstance(id).show(activity.getSupportFragmentManager(), MapFeatureAlert.class.getSimpleName());
+        FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
+        MapFeatureAlert.newInstance(id).show(activity.getSupportFragmentManager().beginTransaction(), MapFeatureAlert.class.getSimpleName());
     }
 
     public static void remove() {

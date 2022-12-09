@@ -43,7 +43,7 @@ public class FileActivity extends AppCompatActivity implements FetchObserver<Dow
 
     private static final int STORAGE_PERMISSION_CODE = 100;
     //http://fdi.geostat.ge/nadzaladevi.gpkg
-    public static final String[] sampleUrls = new String[]{"http://fdi.geostat.ge/samgori.gpkg"};
+    public static final String[] sampleUrls = new String[]{"http://fdi.geostat.ge/nadzaladevi.gpkg"};
 
     private View mainView;
     private TextView progressTextView;
